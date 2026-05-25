@@ -5,7 +5,7 @@ from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
 
-_LOG_FORMAT = "%(asctime)s [%(levelname)s] %(name)s - %(message)s"
+_LOG_FORMAT = "%(asctime)s [%(levelname)s] %(module)s - %(message)s"
 
 
 def setup(logs_folder: str) -> None:
@@ -34,5 +34,17 @@ def setup(logs_folder: str) -> None:
     root_logger.addHandler(file_handler)
 
 
-def get_instance(name: str) -> logging.Logger:
-    return logging.getLogger(name)
+def emit_debug(msg: str, *args, **kwargs) -> None:
+    logging.debug(msg, *args, stacklevel=2, **kwargs)
+
+
+def emit_info(msg: str, *args, **kwargs) -> None:
+    logging.info(msg, *args, stacklevel=2, **kwargs)
+
+
+def emit_warning(msg: str, *args, **kwargs) -> None:
+    logging.warning(msg, *args, stacklevel=2, **kwargs)
+
+
+def emit_error(msg: str, *args, **kwargs) -> None:
+    logging.error(msg, *args, stacklevel=2, **kwargs)

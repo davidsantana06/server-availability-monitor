@@ -38,8 +38,6 @@ _StatusDiff = NamedTuple(
 _MONITOR_CONFIG_FILE = "monitorConfig.json"
 _last_valid_monitor_config = None
 
-logger = log_service.get_instance(__name__)
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Server Availability Monitor")
@@ -64,7 +62,7 @@ def main() -> None:
             last_notification_at = result.last_notification_at
             time.sleep(monitor_config.timing.check_interval_in_seconds)
     except KeyboardInterrupt:
-        logger.info("monitor stopped by user")
+        log_service.emit_info("monitor stopped by user")
 
 
 def _bootstrap(monitor_list_path: str) -> None:
@@ -75,7 +73,7 @@ def _bootstrap(monitor_list_path: str) -> None:
         sys.exit(1)
 
     log_service.setup(monitor_config.paths.logs_folder)
-    logger.info("monitor started, list=%s", monitor_list_path)
+    log_service.emit_info("monitor started, list=%s", monitor_list_path)
 
 
 def _reload_configs(monitor_list_path: str) -> MonitorConfig:
@@ -87,9 +85,9 @@ def _reload_configs(monitor_list_path: str) -> MonitorConfig:
         if is_valid:
             _last_valid_monitor_config = monitor_config
         else:
-            logger.error("invalid monitor config, keeping last valid: %s", errors)
+            log_service.emit_error("invalid monitor config, keeping last valid: %s", errors)
     except Exception as error:
-        logger.error("failed to reload monitor config, keeping last valid: %s", error)
+        log_service.emit_error("failed to reload monitor config, keeping last valid: %s", error)
 
     monitor_config = _last_valid_monitor_config
 
@@ -98,23 +96,23 @@ def _reload_configs(monitor_list_path: str) -> MonitorConfig:
         for user_info in user_infos:
             is_valid, errors = user_info.validate()
             if not is_valid:
-                logger.warning("invalid user_info skipped: %s", errors)
+                log_service.emit_warning("invalid user_info skipped: %s", errors)
     except Exception as error:
-        logger.error("failed to reload user_info: %s", error)
+        log_service.emit_error("failed to reload user_info: %s", error)
 
     try:
         server_configs = servers_config_repository.load(monitor_config.paths.servers_config_file)
         for server_config in server_configs:
             is_valid, errors = server_config.validate()
             if not is_valid:
-                logger.warning("invalid server_config skipped: %s", errors)
+                log_service.emit_warning("invalid server_config skipped: %s", errors)
     except Exception as error:
-        logger.error("failed to reload servers_config: %s", error)
+        log_service.emit_error("failed to reload servers_config: %s", error)
 
     try:
         monitor_list_repository.load(monitor_list_path)
     except Exception as error:
-        logger.error("failed to reload monitor_list: %s", error)
+        log_service.emit_error("failed to reload monitor_list: %s", error)
 
     return monitor_config
 
@@ -155,7 +153,7 @@ def _run_cycle(
             notification_service.notify_reminder(diff.still_offline, user_infos, monitor_config.smtp)
             last_notification_at = datetime.now()
     except Exception as error:
-        logger.error("failed to send notification: %s", error)
+        log_service.emit_error("failed to send notification: %s", error)
 
     return _CycleResult(current_statuses, last_notification_at)
 

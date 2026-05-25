@@ -5,16 +5,13 @@ from app.enums import ServerStatus
 from app.services import log_service
 
 
-logger = log_service.get_instance(__name__)
-
-
 def check(server_config: ServerConfig, timeout_in_seconds: int) -> ServerStatus:
     try:
         with socket.create_connection(
             (server_config.host, server_config.port),
             timeout=timeout_in_seconds,
         ):
-            logger.debug(
+            log_service.emit_debug(
                 "%s (%s:%s) is ONLINE",
                 server_config.hostname,
                 server_config.host,
@@ -22,7 +19,7 @@ def check(server_config: ServerConfig, timeout_in_seconds: int) -> ServerStatus:
             )
             return ServerStatus.ONLINE
     except (socket.timeout, OSError) as error:
-        logger.debug(
+        log_service.emit_debug(
             "%s (%s:%s) is OFFLINE: %s",
             server_config.hostname,
             server_config.host,

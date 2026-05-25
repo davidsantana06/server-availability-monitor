@@ -5,9 +5,6 @@ from app.dtos import SmtpConfig, UserInfo
 from app.services import log_service
 
 
-logger = log_service.get_instance(__name__)
-
-
 def send(
     smtp_config: SmtpConfig,
     user_infos: list[UserInfo],
@@ -16,7 +13,7 @@ def send(
 ) -> None:
     valid_recipients = [u.email for u in user_infos if u.validate()[0]]
     if not valid_recipients:
-        logger.warning("no valid recipients, skipping email: %s", subject)
+        log_service.emit_warning("no valid recipients, skipping email: %s", subject)
         return
 
     msg = EmailMessage()
@@ -31,7 +28,7 @@ def send(
                 smtp.starttls()
             smtp.login(smtp_config.username, smtp_config.password)
             smtp.send_message(msg)
-        logger.info("email sent to %s subject=%r", valid_recipients, subject)
+        log_service.emit_info("email sent to %s subject=%r", valid_recipients, subject)
     except Exception as error:
-        logger.error("failed to send email subject=%r: %s", subject, error)
+        log_service.emit_error("failed to send email subject=%r: %s", subject, error)
         raise
