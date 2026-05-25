@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass
 
+from app.dtos._base import Base
 from app.types import DtoValidation
 
 
@@ -8,7 +9,7 @@ _EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 @dataclass(frozen=True)
-class UserInfo:
+class UserInfo(Base):
     username: str
     email: str
 
@@ -19,9 +20,7 @@ class UserInfo:
         return isinstance(self.email, str) and _EMAIL_REGEX.match(self.email) is not None
 
     def validate(self) -> DtoValidation:
-        errors = []
-        if not self.__is_username_valid():
-            errors.append(f"invalid username: {self.username!r}")
-        if not self.__is_email_valid():
-            errors.append(f"invalid email: {self.email!r}")
-        return (not errors, "; ".join(errors) or None)
+        return self._aggregate([
+            (self.__is_username_valid(), f"invalid username: {self.username!r}"),
+            (self.__is_email_valid(), f"invalid email: {self.email!r}"),
+        ])
