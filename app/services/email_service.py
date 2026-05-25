@@ -1,11 +1,11 @@
-import logging
 import smtplib
 from email.message import EmailMessage
 
 from app.dtos import SmtpConfig, UserInfo
+from app.services import log_service
 
 
-logger = logging.getLogger(__name__)
+logger = log_service.get_instance(__name__)
 
 
 def send(

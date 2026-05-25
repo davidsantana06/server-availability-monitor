@@ -1,5 +1,4 @@
 import argparse
-import logging
 import sys
 import time
 from datetime import datetime
@@ -17,10 +16,10 @@ from app.services import connectivity_service, log_service, notification_service
 from app.types import ServerStatusByHostname
 
 
-logger = logging.getLogger(__name__)
-
 _MONITOR_CONFIG_FILE = "monitorConfig.json"
 _last_valid_monitor_config = None
+
+logger = log_service.get_instance(__name__)
 
 
 class StatusDiff(NamedTuple):

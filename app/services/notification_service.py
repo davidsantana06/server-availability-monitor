@@ -1,10 +1,8 @@
-import logging
-
 from app.dtos import ServerConfig, SmtpConfig, UserInfo
-from app.services import email_service
+from app.services import email_service, log_service
 
 
-logger = logging.getLogger(__name__)
+logger = log_service.get_instance(__name__)
 
 
 def _format_server_list(server_configs: list[ServerConfig]) -> str:

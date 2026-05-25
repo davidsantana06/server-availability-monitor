@@ -1,11 +1,11 @@
-import logging
 import socket
 
 from app.dtos import ServerConfig
 from app.enums import ServerStatus
+from app.services import log_service
 
 
-logger = logging.getLogger(__name__)
+logger = log_service.get_instance(__name__)
 
 
 def check(server_config: ServerConfig, timeout_in_seconds: int) -> ServerStatus:
