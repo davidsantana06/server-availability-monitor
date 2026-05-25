@@ -1,5 +1,3 @@
-from typing import Optional
-
 from app.dtos import MonitorConfig, PathsConfig, SmtpConfig, TimingConfig
 from app.services import json_file_service
 
