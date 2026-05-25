@@ -1,5 +1,5 @@
 from app.dtos import UserInfo
-from app.services import json_file_service
+from app.services import file_system_service
 
 
 _user_infos = []
@@ -7,7 +7,7 @@ _user_infos = []
 
 def load(file_path: str) -> list[UserInfo]:
     global _user_infos
-    data = json_file_service.load(file_path)
+    data = file_system_service.load_json(file_path)
     _user_infos = [_map(item) for item in data]
     return _user_infos
 

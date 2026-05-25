@@ -1,5 +1,5 @@
 from app.dtos import MonitorConfig, PathsConfig, SmtpConfig, TimingConfig
-from app.services import json_file_service
+from app.services import file_system_service
 
 
 _monitor_config = None
@@ -7,7 +7,7 @@ _monitor_config = None
 
 def load(file_path: str) -> MonitorConfig:
     global _monitor_config
-    data = json_file_service.load(file_path)
+    data = file_system_service.load_json(file_path)
     _monitor_config = _map(data)
     return _monitor_config
 

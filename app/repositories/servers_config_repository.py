@@ -1,7 +1,7 @@
 from typing import Optional
 
 from app.dtos import ServerConfig
-from app.services import json_file_service
+from app.services import file_system_service
 
 
 _server_configs = []
@@ -9,7 +9,7 @@ _server_configs = []
 
 def load(file_path: str) -> list[ServerConfig]:
     global _server_configs
-    data = json_file_service.load(file_path)
+    data = file_system_service.load_json(file_path)
     _server_configs = [_map(item) for item in data]
     return _server_configs
 
