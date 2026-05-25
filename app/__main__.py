@@ -2,18 +2,37 @@ import argparse
 import sys
 import time
 from datetime import datetime
-from typing import Optional
+from typing import Dict, List, NamedTuple, Optional
 
-from app.dtos import MonitorConfig
-from app.enums import ServerStatus
-from app.repositories import (
+from .dtos import MonitorConfig, ServerConfig
+from .enums import ServerStatus
+from .repositories import (
     monitor_config_repository,
     monitor_list_repository,
     servers_config_repository,
     user_info_repository,
 )
-from app.services import connectivity_service, log_service, notification_service
-from app.types import CycleResult, ServerStatusByHostname, StatusDiff
+from .services import connectivity_service, log_service, notification_service
+
+
+_ServerStatusByHostname = Dict[str, ServerStatus]
+
+_CycleResult = NamedTuple(
+    "_CycleResult",
+    **{
+        "statuses": _ServerStatusByHostname,
+        "last_notification_at": Optional[datetime]
+    }
+)
+
+_StatusDiff = NamedTuple(
+    "StatusDiff",
+    **{
+        "new_offline": List[ServerConfig],
+        "recovered": List[ServerConfig],
+        "still_offline": List[ServerConfig]
+    }
+)
 
 
 _MONITOR_CONFIG_FILE = "monitorConfig.json"
@@ -102,9 +121,9 @@ def _reload_configs(monitor_list_path: str) -> MonitorConfig:
 
 def _run_cycle(
     monitor_config: MonitorConfig,
-    previous_statuses: ServerStatusByHostname,
+    previous_statuses: _ServerStatusByHostname,
     last_notification_at: Optional[datetime],
-) -> CycleResult:
+) -> _CycleResult:
     hostnames = monitor_list_repository.get_all()
     server_configs = [
         s for hostname in hostnames
@@ -138,13 +157,13 @@ def _run_cycle(
     except Exception as error:
         logger.error("failed to send notification: %s", error)
 
-    return CycleResult(current_statuses, last_notification_at)
+    return _CycleResult(current_statuses, last_notification_at)
 
 
 def _diff_statuses(
-    previous_statuses: ServerStatusByHostname,
-    current_statuses: ServerStatusByHostname,
-) -> StatusDiff:
+    previous_statuses: _ServerStatusByHostname,
+    current_statuses: _ServerStatusByHostname,
+) -> _StatusDiff:
     new_offline, recovered, still_offline = [], [], []
 
     for hostname, status in current_statuses.items():
@@ -161,7 +180,7 @@ def _diff_statuses(
         elif status == ServerStatus.ONLINE and previous == ServerStatus.OFFLINE:
             recovered.append(server_config)
 
-    return StatusDiff(new_offline, recovered, still_offline)
+    return _StatusDiff(new_offline, recovered, still_offline)
 
 
 def _is_reminder_due(

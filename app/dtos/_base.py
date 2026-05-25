@@ -1,7 +1,11 @@
-from app.types import DtoValidation
+from typing import NamedTuple
 
 
 class Base:
-    def _aggregate(self, validations: list[DtoValidation]) -> DtoValidation:
+    class DTOValidation(NamedTuple):
+        is_valid: bool
+        errors: str
+
+    def _aggregate(self, validations: list[DTOValidation]) -> DTOValidation:
         errors = [msg for is_valid, msg in validations if not is_valid and msg]
-        return not errors, "; ".join(errors)
+        return Base.DTOValidation(not errors, "; ".join(errors))

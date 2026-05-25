@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-
-from app.dtos._base import Base
-from app.types import DtoValidation
+from ._base import Base
 
 
 @dataclass(frozen=True)
@@ -23,7 +21,7 @@ class ServerConfig(Base):
             and 1 <= self.port <= 65535
         )
 
-    def validate(self) -> DtoValidation:
+    def validate(self) -> Base.DTOValidation:
         return self._aggregate([
             (self.__is_hostname_valid(), f"invalid hostname: {self.hostname!r}"),
             (self.__is_host_valid(), f"invalid host: {self.host!r}"),

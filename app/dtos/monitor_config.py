@@ -1,8 +1,7 @@
 import re
 from dataclasses import dataclass
 
-from app.dtos._base import Base
-from app.types import DtoValidation
+from ._base import Base
 
 
 _EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -42,7 +41,7 @@ class SmtpConfig(Base):
             and _EMAIL_REGEX.match(self.from_address) is not None
         )
 
-    def validate(self) -> DtoValidation:
+    def validate(self) -> Base.DTOValidation:
         return self._aggregate([
             (self.__is_host_valid(), f"invalid smtp.host: {self.host!r}"),
             (self.__is_port_valid(), f"invalid smtp.port: {self.port!r}"),
@@ -83,7 +82,7 @@ class TimingConfig(Base):
             and self.notification_interval_in_seconds > 0
         )
 
-    def validate(self) -> DtoValidation:
+    def validate(self) -> Base.DTOValidation:
         return self._aggregate([
             (
                 self.__is_check_interval_in_seconds_valid(),
@@ -118,7 +117,7 @@ class PathsConfig(Base):
     def __is_logs_folder_valid(self) -> bool:
         return isinstance(self.logs_folder, str) and len(self.logs_folder.strip()) > 0
 
-    def validate(self) -> DtoValidation:
+    def validate(self) -> Base.DTOValidation:
         return self._aggregate([
             (
                 self.__is_servers_config_file_valid(),
@@ -141,7 +140,7 @@ class MonitorConfig(Base):
     timing: TimingConfig
     paths: PathsConfig
 
-    def validate(self) -> DtoValidation:
+    def validate(self) -> Base.DTOValidation:
         return self._aggregate([
             self.smtp.validate(),
             self.timing.validate(),
