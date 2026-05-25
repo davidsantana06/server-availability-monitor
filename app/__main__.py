@@ -2,7 +2,7 @@ import argparse
 import sys
 import time
 from datetime import datetime
-from typing import NamedTuple, Optional
+from typing import Optional
 
 from app.dtos import MonitorConfig, ServerConfig
 from app.enums import ServerStatus
@@ -13,24 +13,13 @@ from app.repositories import (
     user_info_repository,
 )
 from app.services import connectivity_service, log_service, notification_service
-from app.types import ServerStatusByHostname
+from app.types import CycleResult, ServerStatusByHostname, StatusDiff
 
 
 _MONITOR_CONFIG_FILE = "monitorConfig.json"
 _last_valid_monitor_config = None
 
 logger = log_service.get_instance(__name__)
-
-
-class StatusDiff(NamedTuple):
-    new_offline: list[ServerConfig]
-    recovered: list[ServerConfig]
-    still_offline: list[ServerConfig]
-
-
-class CycleResult(NamedTuple):
-    statuses: ServerStatusByHostname
-    last_notification_at: Optional[datetime]
 
 
 def main() -> None:
