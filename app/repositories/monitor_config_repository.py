@@ -1,5 +1,6 @@
 from app.dtos import MonitorConfig, PathsConfig, SmtpConfig, TimingConfig
 from app.services import file_system_service
+from app.types import RawMonitorConfig
 
 
 _monitor_config = None
@@ -8,7 +9,7 @@ _monitor_config = None
 def load(file_path: str) -> MonitorConfig:
     global _monitor_config
     data = file_system_service.load_json(file_path)
-    _monitor_config = _map(data)
+    _monitor_config = _map_as_dto(data)
     return _monitor_config
 
 
@@ -18,23 +19,9 @@ def get() -> MonitorConfig:
     return _monitor_config
 
 
-def _map(data: dict) -> MonitorConfig:
-    smtp_config = SmtpConfig(
-        host=data["smtp"]["host"],
-        port=data["smtp"]["port"],
-        username=data["smtp"]["username"],
-        password=data["smtp"]["password"],
-        use_tls=data["smtp"]["use_tls"],
-        from_address=data["smtp"]["from_address"],
+def _map_as_dto(raw_monitor_config: RawMonitorConfig) -> MonitorConfig:
+    return MonitorConfig(
+        smtp=SmtpConfig(**raw_monitor_config["smtp"]),
+        timing=TimingConfig(**raw_monitor_config["timing"]),
+        paths=PathsConfig(**raw_monitor_config["paths"]),
     )
-    timing_config = TimingConfig(
-        check_interval_in_seconds=data["timing"]["check_interval_in_seconds"],
-        check_timeout_in_seconds=data["timing"]["check_timeout_in_seconds"],
-        notification_interval_in_seconds=data["timing"]["notification_interval_in_seconds"],
-    )
-    paths_config = PathsConfig(
-        servers_config_file=data["paths"]["servers_config_file"],
-        user_info_file=data["paths"]["user_info_file"],
-        logs_folder=data["paths"]["logs_folder"],
-    )
-    return MonitorConfig(smtp=smtp_config, timing=timing_config, paths=paths_config)

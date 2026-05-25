@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 from typing import Optional
 
-from app.dtos import MonitorConfig, ServerConfig
+from app.dtos import MonitorConfig
 from app.enums import ServerStatus
 from app.repositories import (
     monitor_config_repository,
