@@ -1,0 +1,22 @@
+{
+  "smtp": {
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "username": "monitor@example.com",
+    "password": "replace-with-app-password",
+    "use_tls": true,
+    "from_address": "monitor@example.com"
+  },
+  "monitor": {
+    "interval_seconds": 60,
+    "timeout_seconds": 3
+  },
+  "notifier": {
+    "interval_seconds": 300
+  },
+  "paths": {
+    "servers_config": "servers_config.json",
+    "user_info": "userInfo.json",
+    "logs_dir": "logs"
+  }
+}

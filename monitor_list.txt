@@ -1,0 +1,4 @@
+google-dns
+cloudflare
+example-web
+unreachable
