@@ -10,7 +10,7 @@ Considere um ecossistema de software que depende de diversos serviços distribu�
 
 Garantir a alta disponibilidade desses servidores é crucial. Portanto, qualquer instabilidade deve ser detectada e reportada em tempo real aos administradores responsáveis.
 
-## O Desafio
+### O Desafio
 
 Seu objetivo é desenvolver um programa em **Python (`3.9.x`)** chamado **Monitor de Disponibilidade de Servidores**, cujo propósito é monitorar a saúde de uma lista de servidores críticos.
 
@@ -20,9 +20,9 @@ O programa deve identificar quando um servidor fica offline e, posteriormente, q
 
 Deve ser possível testar seu programa através de uma simulação de falhas. Por exemplo, lidar com cenários onde você altera manualmente o estado dos servidores cadastrados, editando os IPs com endereços válidos e inválidos, forçando a alternância entre status online e offline para validar se o envio de e-mails está funcionando corretamente.
 
-## Requisitos Técnicos
+### Requisitos Técnicos
 
-### 1. Configuração do Monitor de Disponibilidade de Servidores
+#### 1. Configuração do Monitor de Disponibilidade de Servidores
 
 O arquivo `monitorConfig.json` deve conter as seguintes informações:
 
@@ -60,7 +60,7 @@ O arquivo `monitor_list.txt` deve conter as seguintes informações:
 
 Você pode criar outros arquivos de configuração, caso julgue necessário.
 
-### 2. Monitoramento
+#### 2. Monitoramento
 
 A execução do monitor deve ser feita via linha de comando, informando o `path` do arquivo `monitor_list.txt`.
 
@@ -68,7 +68,7 @@ O programa deve realizar verificações periódicas (ex.: a cada 60 segundos) so
 
 O intervalo entre cada verificação deve ser configurável.
 
-### 3. Notificações
+#### 3. Notificações
 
 Ao detectar um servidor offline, enviar um e-mail de alerta.
 
@@ -76,7 +76,7 @@ Continuar notificando os administradores cadastrados, a cada N segundos, até qu
 
 Ao detectar que um servidor retornou, enviar um e-mail específico informando o restabelecimento da conexão e, neste mesmo e-mail, informar também a lista dos servidores que ainda estão offline.
 
-### 4. Logs
+#### 4. Logs
 
 Crie um pacote Python com um módulo específico para registrar os logs das execuções e facilitar eventuais debugs.
 
@@ -86,7 +86,7 @@ Ainda assim, o tipo `ERROR` e os demais tipos, principalmente `DEBUG` e `INFO`, 
 
 O arquivo de log deve ser rotacionado a cada 24 horas.
 
-## Instruções de Entrega
+### Instruções de Entrega
 
 1. O código deve ser entregue via repositório Git ou arquivo compactado.
 
