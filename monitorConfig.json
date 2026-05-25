@@ -7,16 +7,14 @@
     "use_tls": true,
     "from_address": "monitor@example.com"
   },
-  "monitor": {
-    "interval_seconds": 60,
-    "timeout_seconds": 3
-  },
-  "notifier": {
-    "interval_seconds": 300
+  "timing": {
+    "check_interval_in_seconds": 60,
+    "check_timeout_in_seconds": 3,
+    "notification_interval_in_seconds": 300
   },
   "paths": {
-    "servers_config": "servers_config.json",
-    "user_info": "userInfo.json",
-    "logs_dir": "logs"
+    "servers_config_file": "servers_config.json",
+    "user_info_file": "userInfo.json",
+    "logs_folder": "logs"
   }
 }
