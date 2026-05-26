@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple, Optional, Tuple
 import argparse
 import sys
 import time
@@ -35,18 +35,25 @@ _StatusDiff = NamedTuple(
 )
 
 
-def _parse_monitor_list_path() -> str:
+def _parse_args() -> Tuple[str, str]:
     parser = argparse.ArgumentParser(description="Server Availability Monitor")
     parser.add_argument(
-        "monitor_list_path",
-        nargs="?",
+        "-l", "--list",
+        dest="monitor_list_file",
         default="monitor_list.txt",
         help="Path to the monitor list file (default: monitor_list.txt)",
     )
-    return parser.parse_args().monitor_list_path
+    parser.add_argument(
+        "-c", "--config",
+        dest="monitor_config_file",
+        default="monitorConfig.json",
+        help="Path to the monitor config file (default: monitorConfig.json)",
+    )
+    args = parser.parse_args()
+    return args.monitor_list_file, args.monitor_config_file
 
 
-def _bootstrap(monitor_list_path: str, monitor_config_file: str) -> None:
+def _bootstrap(monitor_list_file: str, monitor_config_file: str) -> None:
     monitor_config = monitor_config_repository.load(monitor_config_file)
     is_valid, errors = monitor_config.validate()
 
@@ -55,11 +62,11 @@ def _bootstrap(monitor_list_path: str, monitor_config_file: str) -> None:
         sys.exit(1)
 
     log_service.setup(monitor_config.paths.logs_folder)
-    log_service.emit_info("monitor started, list=%s", monitor_list_path)
+    log_service.emit_info("monitor started, list=%s", monitor_list_file)
 
 
 def _reload_configs(
-    monitor_list_path: str,
+    monitor_list_file: str,
     monitor_config_file: str,
     last_valid_monitor_config: Optional[MonitorConfig],
 ) -> Optional[MonitorConfig]:
@@ -100,7 +107,7 @@ def _reload_configs(
 
     def reload_monitor_list() -> None:
         try:
-            monitor_list_repository.load(monitor_list_path)
+            monitor_list_repository.load(monitor_list_file)
         except Exception as error:
             log_service.emit_error("failed to reload monitor_list: %s", error)
 
@@ -219,9 +226,8 @@ def _is_reminder_due(
 
 
 if __name__ == "__main__":
-    monitor_list_path = _parse_monitor_list_path()
-    monitor_config_file = "monitorConfig.json"
-    _bootstrap(monitor_list_path, monitor_config_file)
+    monitor_list_file, monitor_config_file = _parse_args()
+    _bootstrap(monitor_list_file, monitor_config_file)
 
     previous_statuses = {}
     last_notification_at = None
@@ -230,7 +236,7 @@ if __name__ == "__main__":
     try:
         while True:
             last_valid_monitor_config = _reload_configs(
-                monitor_list_path,
+                monitor_list_file,
                 monitor_config_file,
                 last_valid_monitor_config,
             )
