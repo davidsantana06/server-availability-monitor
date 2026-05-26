@@ -1,5 +1,5 @@
 [
-  { "hostname": "google-dns",  "ip":  "8.8.8.8",        "port": 53  },
+  { "hostname": "google-dns",  "ip":  "8.8.8.8",         "port": 53  },
   { "hostname": "cloudflare",  "dns": "one.one.one.one", "port": 443 },
   { "hostname": "example-web", "dns": "example.com",     "port": 443 },
   { "hostname": "unreachable", "ip":  "192.0.2.1",       "port": 9999 }
