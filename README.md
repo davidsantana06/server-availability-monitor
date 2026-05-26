@@ -1,4 +1,4 @@
-**server-availability-monitor (SAM)** é uma ferramenta de linha de comando que monitora a disponibilidade de servidores em rede e envia notificações por e-mail quando detecta quedas, recuperações ou servidores persistentemente offline.
+**server-availability-monitor (SAM)** é uma ferramenta de linha de comando que monitora a disponibilidade de servidores e envia notificações por e-mail quando detecta quedas, recuperações ou servidores persistentemente offline.
 
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
@@ -6,18 +6,20 @@
 
 O SAM opera em loop contínuo. A cada ciclo, a sequência abaixo é executada:
 
-```
-Argumentos da CLI parseados
-  → Bootstrap: monitorConfig.json lido e validado; logging inicializado
-    → Loop (a cada timing.check_interval_in_seconds):
-        → Repositórios: arquivos de configuração relidos do disco
-          → Connectivity service: cada servidor da lista verificado via TCP
-            → Diff de status: resultado comparado ao ciclo anterior
-              → Notification service: e-mail disparado via SMTP se houver
-                 queda, recuperação ou lembrete vencido
-```
+<div align="center">
+  <img src="./assets/workflow.png" alt="Fluxo de funcionamento" width="100%">
+  <p><sub>FLUXO DE FUNCIONAMENTO</sub></p>
+</div>
 
-O intervalo entre ciclos, o timeout de conexão e o intervalo mínimo entre notificações são todos configuráveis em `monitorConfig.json`.
+1. **Argumentos da CLI parseados**
+2. **Inicialização** — `monitorConfig.json` lido e validado; logging inicializado
+3. **Loop** — a cada `timing.check_interval_in_seconds`:
+   - **Repositórios** — arquivos de configuração relidos do disco
+   - **Serviço de conectividade** — cada servidor da lista verificado via TCP
+   - **Diff de status** — resultado comparado ao ciclo anterior
+   - **Serviço de notificação** — e-mail disparado via SMTP se houver queda, recuperação ou lembrete vencido
+
+O intervalo entre ciclos, o timeout de conexão e o intervalo mínimo entre notificações são configuráveis em `monitorConfig.json`.
 
 ## 🛠️ Instalação e Execução
 
@@ -37,13 +39,13 @@ source .venv/bin/activate
 
 ### 2️⃣ Configurar os Arquivos de Configuração
 
-O SAM depende de quatro arquivos para operar. Os caminhos de todos eles são configuráveis; os valores abaixo correspondem aos defaults.
+O SAM depende de quatro arquivos para operar. Os caminhos de todos eles são configuráveis; os valores abaixo servem como referência para o preenchimento.
 
 ---
 
 #### `monitorConfig.json`
 
-Configuração central da aplicação. Referenciado via `-c/--config` (default: `monitorConfig.json`).
+Configuração central da aplicação. Referenciado via `-c/--config` (o padrão é: `monitorConfig.json`).
 
 ```json
 {
@@ -109,11 +111,9 @@ Lista de destinatários que receberão as notificações por e-mail. Referenciad
 [{ "username": "Nome Sobrenome", "email": "destinatario@email.com" }]
 ```
 
----
-
 #### `monitor_list.txt`
 
-Define quais hostnames de `servers_config.json` estão ativamente sob monitoramento. Referenciado via `-l/--list` (default: `monitor_list.txt`). Um hostname por linha.
+Define quais hostnames de `servers_config.json` estão ativamente sob monitoramento. Referenciado via `-l/--list` (o padrão é: `monitor_list.txt`). Um hostname por linha.
 
 ```
 google-dns
@@ -150,7 +150,7 @@ Exemplo com caminhos explícitos:
 python -m app -l /etc/sam/monitor_list.txt -c /etc/sam/monitorConfig.json
 ```
 
-Os logs são gravados em `paths.logs_folder` com rotação diária (um arquivo por data). Para encerrar, pressione `Ctrl+C`.
+Os logs são gravados em `paths.logs_folder` com rotação diária (um arquivo por data). Para encerrar a execução, pressione `CTRL+C`.
 
 ## 🗂️ Estruturação
 
@@ -158,29 +158,27 @@ Os logs são gravados em `paths.logs_folder` com rotação diária (um arquivo p
 server-availability-monitor/
 ├── app/
 │   ├── dtos/
+│   │   ├── __init__.py
 │   │   ├── _base.py
 │   │   ├── monitor_config.py
 │   │   ├── server_config.py
-│   │   ├── user_info.py
-│   │   └── __init__.py
+│   │   └── user_info.py
 │   ├── repositories/
+│   │   ├── __init__.py
 │   │   ├── monitor_config_repository.py
 │   │   ├── monitor_list_repository.py
 │   │   ├── servers_config_repository.py
-│   │   ├── user_info_repository.py
-│   │   └── __init__.py
+│   │   └── user_info_repository.py
 │   ├── services/
+│   │   ├── __init__.py
 │   │   ├── connectivity_service.py
 │   │   ├── email_service.py
 │   │   ├── file_system_service.py
 │   │   ├── log_service.py
-│   │   ├── notification_service.py
-│   │   └── __init__.py
-│   ├── enums.py
-│   └── __main__.py
-├── docs/
-│   ├── technical-challenge.md
-│   └── technical-challenge.pdf
+│   │   └── notification_service.py
+│   ├── __main__.py
+│   └── enums.py
+├── assets/
 ├── logs/
 ├── monitorConfig.json
 ├── monitor_list.txt
@@ -190,7 +188,7 @@ server-availability-monitor/
 
 ### 📁 `app/`
 
-Código-fonte principal da aplicação.
+Código-fonte da aplicação.
 
 #### 📄 `__main__.py`
 
@@ -219,28 +217,24 @@ Camada de acesso a dados. Cada repositório é responsável por ler e manter em 
 
 Camada de serviços com lógica de negócio e I/O.
 
-| Arquivo                   | Responsabilidade                                                             |
-| ------------------------- | ---------------------------------------------------------------------------- |
-| `connectivity_service.py` | Verifica a disponibilidade de um servidor via conexão TCP                    |
-| `notification_service.py` | Compõe e despacha notificações de queda, recuperação e lembrete              |
-| `email_service.py`        | Envia e-mails via SMTP                                                       |
-| `log_service.py`          | Configura e expõe o logger da aplicação; utilitário de resolução de caminhos |
-| `file_system_service.py`  | Leitura de arquivos JSON e texto; resolução de caminhos                      |
+| Arquivo                   | Responsabilidade                                                |
+| ------------------------- | --------------------------------------------------------------- |
+| `connectivity_service.py` | Verifica a disponibilidade de um servidor via conexão TCP       |
+| `notification_service.py` | Compõe e despacha notificações de queda, recuperação e lembrete |
+| `email_service.py`        | Envia e-mails via SMTP                                          |
+| `log_service.py`          | Configura e expõe o logger da aplicação                         |
+| `file_system_service.py`  | Leitura de arquivos JSON e texto; resolução de caminhos         |
 
-### 📁 `docs/`
+### 📁 `assets/`
 
-Documentação de referência do projeto.
+Ativos do projeto materializados como arquivos estáticos.
 
 ### 📁 `logs/`
 
 Logs gerados em tempo de execução, com rotação diária. Cada arquivo corresponde a uma data (`YYYY-MM-DD.log`).
 
-## 🗒️ Notas do Desenvolvedor
-
-<!-- Seção reservada para anotações pessoais sobre o projeto. -->
-
 ## 📚 Referências
 
 - Desafio técnico que originou este projeto, disponível em:
-  - Markdown: [`docs/technical-challenge.md`](./docs/technical-challenge.md)
-  - PDF: [`docs/technical-challenge.pdf`](./docs/technical-challenge.pdf)
+  - Markdown: [`assets/technical-challenge.md`](./assets/technical-challenge.md)
+  - PDF: [`assets/technical-challenge.pdf`](./assets/technical-challenge.pdf)
