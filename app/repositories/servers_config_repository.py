@@ -5,7 +5,7 @@ from app.services import file_system_service
 
 
 _RawServerConfig = TypedDict(
-    "RawServerConfig",
+    "_RawServerConfig",
     {
         "hostname": str,
         "ip": Optional[str],

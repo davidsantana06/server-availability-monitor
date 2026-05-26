@@ -5,7 +5,7 @@ from app.services import file_system_service
 
 
 _RawSmtpConfig = TypedDict(
-    "RawSmtpConfig",
+    "_RawSmtpConfig",
     {
         "host": str,
         "port": int,
@@ -17,7 +17,7 @@ _RawSmtpConfig = TypedDict(
 )
 
 _RawTimingConfig = TypedDict(
-    "RawTimingConfig",
+    "_RawTimingConfig",
     {
         "check_interval_in_seconds": int,
         "check_timeout_in_seconds": int,
@@ -26,7 +26,7 @@ _RawTimingConfig = TypedDict(
 )
 
 _RawPathsConfig = TypedDict(
-    "RawPathsConfig",
+    "_RawPathsConfig",
     {
         "servers_config_file": str,
         "user_info_file": str,
@@ -35,7 +35,7 @@ _RawPathsConfig = TypedDict(
 )
 
 _RawMonitorConfig = TypedDict(
-    "RawMonitorConfig",
+    "_RawMonitorConfig",
     {
         "smtp": _RawSmtpConfig,
         "timing": _RawTimingConfig,

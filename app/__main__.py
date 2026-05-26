@@ -19,19 +19,19 @@ _ServerStatusByHostname = Dict[str, ServerStatus]
 
 _CycleResult = NamedTuple(
     "_CycleResult",
-    **{
-        "statuses": _ServerStatusByHostname,
-        "last_notification_at": Optional[datetime],
-    }
+    [
+        ("statuses", _ServerStatusByHostname),
+        ("last_notification_at", Optional[datetime]),
+    ]
 )
 
 _StatusDiff = NamedTuple(
     "_StatusDiff",
-    **{
-        "new_offline": List[ServerConfig],
-        "recovered": List[ServerConfig],
-        "still_offline": List[ServerConfig],
-    }
+    [
+        ("new_offline", List[ServerConfig]),
+        ("recovered", List[ServerConfig]),
+        ("still_offline", List[ServerConfig]),
+    ]
 )
 
 

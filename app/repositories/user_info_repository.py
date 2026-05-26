@@ -4,7 +4,7 @@ from app.dtos import UserInfo
 from app.services import file_system_service
 
 
-_RawUserInfo = TypedDict("RawUserInfo", {"username": str, "email": str})
+_RawUserInfo = TypedDict("_RawUserInfo", {"username": str, "email": str})
 
 
 _user_infos = []

@@ -5,7 +5,7 @@ import re
 class Base:
     _EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
-    DTOValidation = NamedTuple("DTOValidation", **{"is_valid": bool, "errors": str})
+    DTOValidation = NamedTuple("DTOValidation", [('is_valid', bool), ('errors', str)])
 
     def _aggregate(self, validations: list) -> DTOValidation:
         errors = [msg for is_valid, msg in validations if not is_valid and msg]
