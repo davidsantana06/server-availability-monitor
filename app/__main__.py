@@ -35,6 +35,35 @@ _StatusDiff = NamedTuple(
 )
 
 
+def _print_banner() -> None:
+    art = [
+        r"   ____    _    __  __ ",
+        r"  / ___|  / \  |  \/  |",
+        r"  \___ \ / _ \ | |\/| |",
+        r"   ___) / ___ \| |  | |",
+        r"  |____/_/   \_\_|  |_|",
+    ]
+    title = "  [S]erver [A]vailability [M]onitor"
+    notice = "  ( ! ) Output is being logged in paths.logs_folder"
+
+    art_width = max(len(line) for line in art)
+    w = max(len(title), len(notice), art_width) + 2
+    art_pad = " " * ((w - art_width) // 2)
+    rule = "─" * w
+
+    print()
+    print(f"  ╭{rule}╮")
+    for line in art:
+        print(f"  │{art_pad + line:<{w}}│")
+    print(f"  │{'':^{w}}│")
+    print(f"  │{title:^{w}}│")
+    print(f"  │{'':^{w}}│")
+    print(f"  │{notice:<{w}}│")
+    print(f"  │{'':^{w}}│")
+    print(f"  ╰{rule}╯")
+    print()
+
+
 def _parse_args() -> Tuple[str, str]:
     parser = argparse.ArgumentParser(description="Server Availability Monitor")
     parser.add_argument(
@@ -62,6 +91,7 @@ def _bootstrap(monitor_list_file: str, monitor_config_file: str) -> None:
         sys.exit(1)
 
     log_service.setup(monitor_config.paths.logs_folder)
+    _print_banner()
     log_service.emit_info("monitor started, list=%s", monitor_list_file)
 
 
