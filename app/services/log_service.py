@@ -1,15 +1,18 @@
-import logging
-import sys
 from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
-from pathlib import Path
+import logging
+import sys
+
+from . import file_system_service
 
 
-_LOG_FORMAT = "%(asctime)s [%(levelname)s] %(module)s - %(message)s"
+_LOG_FORMAT = "%(asctime)s [%(levelname)s] %(name)s - %(message)s"
+
+_logger = logging.getLogger("SAM")
 
 
 def setup(logs_folder: str) -> None:
-    folder = Path(logs_folder)
+    folder = file_system_service.resolve_path(logs_folder)
     folder.mkdir(parents=True, exist_ok=True)
 
     log_file = folder / (datetime.today().strftime("%Y-%m-%d") + ".log")
@@ -27,24 +30,24 @@ def setup(logs_folder: str) -> None:
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
 
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)
-    root_logger.handlers.clear()
-    root_logger.addHandler(stream_handler)
-    root_logger.addHandler(file_handler)
+    _logger.setLevel(logging.DEBUG)
+    _logger.handlers.clear()
+    _logger.propagate = False
+    _logger.addHandler(stream_handler)
+    _logger.addHandler(file_handler)
 
 
 def emit_debug(msg: str, *args, **kwargs) -> None:
-    logging.debug(msg, *args, stacklevel=2, **kwargs)
+    _logger.debug(msg, *args, stacklevel=2, **kwargs)
 
 
 def emit_info(msg: str, *args, **kwargs) -> None:
-    logging.info(msg, *args, stacklevel=2, **kwargs)
+    _logger.info(msg, *args, stacklevel=2, **kwargs)
 
 
 def emit_warning(msg: str, *args, **kwargs) -> None:
-    logging.warning(msg, *args, stacklevel=2, **kwargs)
+    _logger.warning(msg, *args, stacklevel=2, **kwargs)
 
 
 def emit_error(msg: str, *args, **kwargs) -> None:
-    logging.error(msg, *args, stacklevel=2, **kwargs)
+    _logger.error(msg, *args, stacklevel=2, **kwargs)
