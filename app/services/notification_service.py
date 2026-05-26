@@ -13,13 +13,13 @@ def notify_offline(
     user_infos: list[UserInfo],
     smtp_config: SmtpConfig,
 ) -> None:
-    def _subject() -> str:
+    def build_subject() -> str:
         return f"[ALERT] {len(new_offline)} server(s) went offline"
 
-    def _body() -> str:
+    def build_body() -> str:
         return "The following servers are now offline:\n\n" + _format_server_list(new_offline)
 
-    email_service.send(smtp_config, user_infos, _subject(), _body())
+    email_service.send(smtp_config, user_infos, build_subject(), build_body())
 
 
 def notify_recovery(
@@ -28,16 +28,16 @@ def notify_recovery(
     user_infos: list[UserInfo],
     smtp_config: SmtpConfig,
 ) -> None:
-    def _subject() -> str:
+    def build_subject() -> str:
         return f"[RECOVERY] {len(recovered)} server(s) back online"
 
-    def _body() -> str:
+    def build_body() -> str:
         body = "The following servers are back online:\n\n" + _format_server_list(recovered)
         if still_offline:
             body += "\n\nServers still offline:\n\n" + _format_server_list(still_offline)
         return body
 
-    email_service.send(smtp_config, user_infos, _subject(), _body())
+    email_service.send(smtp_config, user_infos, build_subject(), build_body())
 
 
 def notify_reminder(
@@ -45,10 +45,10 @@ def notify_reminder(
     user_infos: list[UserInfo],
     smtp_config: SmtpConfig,
 ) -> None:
-    def _subject() -> str:
+    def build_subject() -> str:
         return f"[REMINDER] {len(offline)} server(s) still offline"
 
-    def _body() -> str:
+    def build_body() -> str:
         return "The following servers are still offline:\n\n" + _format_server_list(offline)
 
-    email_service.send(smtp_config, user_infos, _subject(), _body())
+    email_service.send(smtp_config, user_infos, build_subject(), build_body())
