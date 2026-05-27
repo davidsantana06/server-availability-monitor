@@ -206,24 +206,24 @@ Enumerações da aplicação. Define `ServerStatus` (`ONLINE` / `OFFLINE`), util
 
 Camada de acesso a dados. Cada repositório é responsável por ler e manter em memória um dos arquivos de configuração. Os repositórios são recarregados do disco a cada ciclo, permitindo que alterações nos arquivos entrem em vigor sem reiniciar o monitor.
 
-| Arquivo                        | Responsabilidade                                     |
+| Módulo                         | Responsabilidade                                     |
 | ------------------------------ | ---------------------------------------------------- |
 | `monitor_config_repository.py` | Lê e valida o `monitorConfig.json`                   |
+| `monitor_list_repository.py`   | Lê a lista de hostnames ativos do `monitor_list.txt` |
 | `servers_config_repository.py` | Lê e indexa os servidores do `servers_config.json`   |
 | `user_info_repository.py`      | Lê os destinatários do `userInfo.json`               |
-| `monitor_list_repository.py`   | Lê a lista de hostnames ativos do `monitor_list.txt` |
 
 #### 📁 `services/`
 
 Camada de serviços com lógica de negócio e I/O.
 
-| Arquivo                   | Responsabilidade                                                |
+| Módulo                    | Responsabilidade                                                |
 | ------------------------- | --------------------------------------------------------------- |
 | `connectivity_service.py` | Verifica a disponibilidade de um servidor via conexão TCP       |
-| `notification_service.py` | Compõe e despacha notificações de queda, recuperação e lembrete |
 | `email_service.py`        | Envia e-mails via SMTP                                          |
-| `log_service.py`          | Configura e expõe o logger da aplicação                         |
 | `file_system_service.py`  | Leitura de arquivos JSON e texto; resolução de caminhos         |
+| `log_service.py`          | Configura e expõe o logger da aplicação                         |
+| `notification_service.py` | Compõe e despacha notificações de queda, recuperação e lembrete |
 
 ### 📁 `assets/`
 
@@ -236,5 +236,5 @@ Logs gerados em tempo de execução, com rotação diária. Cada arquivo corresp
 ## 📚 Referências
 
 - Desafio técnico que originou este projeto, disponível em:
-  - Markdown: [`assets/technical-challenge.md`](./assets/technical-challenge.md)
-  - PDF: [`assets/technical-challenge.pdf`](./assets/technical-challenge.pdf)
+  - [`assets/technical-challenge.md`](./assets/technical-challenge.md)
+  - [`assets/technical-challenge.pdf`](./assets/technical-challenge.pdf)
