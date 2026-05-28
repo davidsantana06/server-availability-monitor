@@ -231,7 +231,7 @@ Ativos do projeto materializados como arquivos estáticos.
 
 ### 📁 `logs/`
 
-Logs gerados em tempo de execução, com rotação diária. Cada arquivo corresponde a uma data (`YYYY-MM-DD.log`).
+Logs gerados em tempo de execução, com rotação diária. O arquivo ativo é nomeado `sam.log` e os arquivos rotacionados recebem a data correspondente (ex: `sam.2026-05-26.log`).
 
 ## 📚 Referências
 
