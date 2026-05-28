@@ -15,7 +15,6 @@ def setup(logs_folder: str) -> None:
     folder = file_system_service.resolve_path(logs_folder)
     folder.mkdir(parents=True, exist_ok=True)
 
-    log_file = folder / (datetime.today().strftime("%Y-%m-%d") + ".log")
     formatter = logging.Formatter(_LOG_FORMAT)
 
     stream_handler = logging.StreamHandler(sys.stdout)
@@ -23,10 +22,13 @@ def setup(logs_folder: str) -> None:
     stream_handler.setFormatter(formatter)
 
     file_handler = TimedRotatingFileHandler(
-        filename=log_file,
+        filename=str(folder / "sam.log"),
         when="midnight",
+        interval=1,
         encoding="utf-8",
     )
+    file_handler.suffix = "%Y-%m-%d"
+    file_handler.namer = lambda filename: filename.replace(".log.", ".") + ".log"
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
 
