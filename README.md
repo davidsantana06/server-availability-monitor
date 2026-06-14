@@ -15,11 +15,11 @@ O SAM opera em loop contínuo. A cada ciclo, a sequência abaixo é executada:
 2. **Inicialização** — `monitorConfig.json` lido e validado; logging inicializado
 3. **Loop** — a cada `timing.check_interval_in_seconds`:
    - **Repositórios** — arquivos de configuração relidos do disco
-   - **Serviço de conectividade** — cada servidor da lista verificado via TCP
+   - **Serviço de conectividade** — servidores da lista verificados via TCP em paralelo (`concurrency.check_workers` threads)
    - **Diff de status** — resultado comparado ao ciclo anterior
-   - **Serviço de notificação** — e-mail disparado via SMTP se houver queda, recuperação ou lembrete vencido
+   - **Serviço de notificação** — e-mail enviado via SMTP (com timeout) se houver queda, recuperação ou lembrete vencido
 
-O intervalo entre ciclos, o timeout de conexão e o intervalo mínimo entre notificações são configuráveis em `monitorConfig.json`.
+O intervalo entre ciclos, o timeout de conexão, o intervalo mínimo entre notificações e o número de threads de verificação são configuráveis em `monitorConfig.json`. Os limites mínimo e máximo de cada um desses campos são validados pelos DTOs no bootstrap — valores fora da faixa interrompem a inicialização.
 
 ## 🛠️ Instalação e Execução
 
@@ -37,7 +37,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 2️⃣ Configurar os Arquivos de Configuração
+### 2️⃣ Preencher os Arquivos de Configuração
 
 O SAM depende de quatro arquivos para operar. Os caminhos de todos eles são configuráveis; os valores abaixo servem como referência para o preenchimento.
 
@@ -62,6 +62,9 @@ Configuração central da aplicação. Referenciado via `-c/--config` (o padrão
     "check_timeout_in_seconds": 3,
     "notification_interval_in_seconds": 60
   },
+  "concurrency": {
+    "check_workers": 10
+  },
   "paths": {
     "servers_config_file": "servers_config.json",
     "user_info_file": "userInfo.json",
@@ -81,6 +84,7 @@ Configuração central da aplicação. Referenciado via `-c/--config` (o padrão
 | `timing.check_interval_in_seconds`        | Intervalo entre ciclos de verificação                  |
 | `timing.check_timeout_in_seconds`         | Timeout de cada conexão TCP                            |
 | `timing.notification_interval_in_seconds` | Intervalo mínimo entre lembretes de servidores offline |
+| `concurrency.check_workers`               | Nº de threads para verificação paralela dos servidores |
 | `paths.servers_config_file`               | Caminho para o arquivo de servidores monitorados       |
 | `paths.user_info_file`                    | Caminho para o arquivo de destinatários                |
 | `paths.logs_folder`                       | Pasta onde os logs serão gravados                      |
@@ -151,6 +155,17 @@ python -m app -l /etc/sam/monitor_list.txt -c /etc/sam/monitorConfig.json
 ```
 
 Os logs são gravados em `paths.logs_folder` com rotação diária (um arquivo por data). Para encerrar a execução, pressione `CTRL+C`.
+
+## 🧪 Cobertura de Testes
+
+A suíte cobre apenas a **lógica pura** da aplicação — validação dos DTOs (`TimingConfig`, `ConcurrencyConfig`), o diff de status entre ciclos (`_diff_statuses`) e a regra de lembrete (`_is_reminder_due`), seguindo o padrão _arrange / act / assert_.
+
+O `pytest` é a única dependência de desenvolvimento (declarada em `requirements.txt`). Para executar:
+
+```bash
+pip install -r requirements.txt
+pytest --verbose
+```
 
 ## 🗂️ Estruturação
 
