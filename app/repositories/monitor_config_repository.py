@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from app.dtos import MonitorConfig, PathsConfig, SmtpConfig, TimingConfig
+from app.dtos import ConcurrencyConfig, MonitorConfig, PathsConfig, SmtpConfig, TimingConfig
 from app.services import file_system_service
 
 
@@ -25,6 +25,13 @@ _RawTimingConfig = TypedDict(
     }
 )
 
+_RawConcurrencyConfig = TypedDict(
+    "_RawConcurrencyConfig",
+    {
+        "check_workers": int,
+    }
+)
+
 _RawPathsConfig = TypedDict(
     "_RawPathsConfig",
     {
@@ -39,6 +46,7 @@ _RawMonitorConfig = TypedDict(
     {
         "smtp": _RawSmtpConfig,
         "timing": _RawTimingConfig,
+        "concurrency": _RawConcurrencyConfig,
         "paths": _RawPathsConfig,
     }
 )
@@ -64,5 +72,6 @@ def _map_as_dto(raw_monitor_config: _RawMonitorConfig) -> MonitorConfig:
     return MonitorConfig(
         smtp=SmtpConfig(**raw_monitor_config["smtp"]),
         timing=TimingConfig(**raw_monitor_config["timing"]),
+        concurrency=ConcurrencyConfig(**raw_monitor_config["concurrency"]),
         paths=PathsConfig(**raw_monitor_config["paths"]),
     )

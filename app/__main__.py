@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import Dict, List, NamedTuple, Optional, Tuple
 import argparse
@@ -162,13 +163,16 @@ def _run_cycle(
             if (s := servers_config_repository.get_by_hostname(hostname)) is not None
         ]
 
-        return {
-            s.hostname: connectivity_service.check(
-                s,
-                monitor_config.timing.check_timeout_in_seconds
-            )
-            for s in server_configs
-        }
+        if not server_configs:
+            return {}
+
+        timeout = monitor_config.timing.check_timeout_in_seconds
+        with ThreadPoolExecutor(max_workers=monitor_config.concurrency.check_workers) as executor:
+            futures = {
+                executor.submit(connectivity_service.check, s, timeout): s.hostname
+                for s in server_configs
+            }
+            return {futures[future]: future.result() for future in as_completed(futures)}
 
     def send_notifications(diff: _StatusDiff) -> Optional[datetime]:
         notified_at = last_notification_at

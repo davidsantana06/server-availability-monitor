@@ -5,6 +5,9 @@ from app.dtos import SmtpConfig, UserInfo
 from app.services import log_service
 
 
+_SMTP_TIMEOUT_IN_SECONDS = 10
+
+
 def send(
     smtp_config: SmtpConfig,
     user_infos: list[UserInfo],
@@ -23,7 +26,7 @@ def send(
     msg.set_content(body)
 
     try:
-        with smtplib.SMTP(smtp_config.host, smtp_config.port) as smtp:
+        with smtplib.SMTP(smtp_config.host, smtp_config.port, timeout=_SMTP_TIMEOUT_IN_SECONDS) as smtp:
             if smtp_config.use_tls:
                 smtp.starttls()
             smtp.login(smtp_config.username, smtp_config.password)

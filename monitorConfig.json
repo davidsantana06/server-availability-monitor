@@ -12,6 +12,9 @@
     "check_timeout_in_seconds": 3,
     "notification_interval_in_seconds": 300
   },
+  "concurrency": {
+    "check_workers": 10
+  },
   "paths": {
     "servers_config_file": "servers_config.json",
     "user_info_file": "userInfo.json",
