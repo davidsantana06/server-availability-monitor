@@ -7,7 +7,7 @@ class Base:
 
     DTOValidation = NamedTuple("DTOValidation", [('is_valid', bool), ('errors', str)])
 
-    def _aggregate(self, validations: list) -> DTOValidation:
+    def _aggregate(self, validations: list[DTOValidation]) -> DTOValidation:
         errors = [msg for is_valid, msg in validations if not is_valid and msg]
         return self.DTOValidation(not errors, "; ".join(errors))
 
@@ -18,6 +18,10 @@ class Base:
     @staticmethod
     def _is_positive_int(v: Any) -> bool:
         return isinstance(v, int) and not isinstance(v, bool) and v > 0
+
+    @staticmethod
+    def _is_int_in_range(v: Any, min_value: int, max_value: int) -> bool:
+        return isinstance(v, int) and not isinstance(v, bool) and min_value <= v <= max_value
 
     @classmethod
     def _is_port(cls, v: Any) -> bool:
