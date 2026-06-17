@@ -1,7 +1,7 @@
 import smtplib
 from email.message import EmailMessage
 
-from app.dtos import SmtpConfig, UserInfo
+from app.dtos import SmtpConfig, UsersInfo
 from app.services import log_service
 
 
@@ -10,7 +10,7 @@ _SMTP_TIMEOUT_IN_SECONDS = 10
 
 def send(
     smtp_config: SmtpConfig,
-    user_infos: list[UserInfo],
+    user_infos: list[UsersInfo],
     subject: str,
     body: str,
 ) -> None:

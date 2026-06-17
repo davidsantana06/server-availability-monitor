@@ -3,7 +3,7 @@ from ._base import Base
 
 
 @dataclass(frozen=True)
-class ServerConfig(Base):
+class ServersPool(Base):
     hostname: str
     host: str
     port: int

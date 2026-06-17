@@ -3,7 +3,7 @@ from ._base import Base
 
 
 @dataclass(frozen=True)
-class UserInfo(Base):
+class UsersInfo(Base):
     username: str
     email: str
 

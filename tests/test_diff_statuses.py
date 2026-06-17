@@ -1,12 +1,12 @@
 from app import __main__ as monitor
-from app.dtos import ServerConfig
+from app.dtos import ServersPool
 from app.enums import ServerStatus
 from app.repositories import servers_config_repository
 
 
 def _seed(*hostnames: str):
     servers_config_repository._server_configs = [
-        ServerConfig(hostname=h, host="1.1.1.1", port=443) for h in hostnames
+        ServersPool(hostname=h, host="1.1.1.1", port=443) for h in hostnames
     ]
 
 

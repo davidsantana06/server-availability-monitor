@@ -1,6 +1,6 @@
 from typing import Optional, TypedDict
 
-from app.dtos import ServerConfig
+from app.dtos import ServersPool
 from app.services import file_system_service
 
 
@@ -18,23 +18,23 @@ _RawServerConfig = TypedDict(
 _server_configs = []
 
 
-def load(file_path: str) -> list[ServerConfig]:
+def load(file_path: str) -> list[ServersPool]:
     global _server_configs
     raw_server_configs = file_system_service.load_json(file_path)
     _server_configs = [_map_as_dto(rsc) for rsc in raw_server_configs]
     return _server_configs
 
 
-def get_all() -> list[ServerConfig]:
+def get_all() -> list[ServersPool]:
     return _server_configs
 
 
-def get_by_hostname(hostname: str) -> Optional[ServerConfig]:
+def get_by_hostname(hostname: str) -> Optional[ServersPool]:
     return next((s for s in _server_configs if s.hostname == hostname), None)
 
 
-def _map_as_dto(raw_server_config: _RawServerConfig) -> ServerConfig:
-    return ServerConfig(
+def _map_as_dto(raw_server_config: _RawServerConfig) -> ServersPool:
+    return ServersPool(
         hostname=raw_server_config["hostname"],
         host=raw_server_config.get("ip") or raw_server_config.get("dns", ""),
         port=raw_server_config["port"],

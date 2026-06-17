@@ -1,16 +1,16 @@
-from app.dtos import ServerConfig, SmtpConfig, UserInfo
+from app.dtos import ServersPool, SmtpConfig, UsersInfo
 from app.services import email_service
 
 
-def _format_server_list(server_configs: list[ServerConfig]) -> str:
+def _format_server_list(server_configs: list[ServersPool]) -> str:
     return "\n".join(
         f"  - {s.hostname} ({s.host}:{s.port})" for s in server_configs
     )
 
 
 def notify_offline(
-    new_offline: list[ServerConfig],
-    user_infos: list[UserInfo],
+    new_offline: list[ServersPool],
+    user_infos: list[UsersInfo],
     smtp_config: SmtpConfig,
 ) -> None:
     def build_subject() -> str:
@@ -23,9 +23,9 @@ def notify_offline(
 
 
 def notify_recovery(
-    recovered: list[ServerConfig],
-    still_offline: list[ServerConfig],
-    user_infos: list[UserInfo],
+    recovered: list[ServersPool],
+    still_offline: list[ServersPool],
+    user_infos: list[UsersInfo],
     smtp_config: SmtpConfig,
 ) -> None:
     def build_subject() -> str:
@@ -41,8 +41,8 @@ def notify_recovery(
 
 
 def notify_reminder(
-    offline: list[ServerConfig],
-    user_infos: list[UserInfo],
+    offline: list[ServersPool],
+    user_infos: list[UsersInfo],
     smtp_config: SmtpConfig,
 ) -> None:
     def build_subject() -> str:

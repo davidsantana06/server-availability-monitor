@@ -1,14 +1,14 @@
 from .monitor_config import ConcurrencyConfig, MonitorConfig, PathsConfig, SmtpConfig, TimingConfig
-from .server_config import ServerConfig
-from .user_info import UserInfo
+from .servers_pool import ServersPool
+from .users_info import UsersInfo
 
 
 __all__ = [
     "ConcurrencyConfig",
     "MonitorConfig",
     "PathsConfig",
-    "ServerConfig",
+    "ServersPool",
     "SmtpConfig",
     "TimingConfig",
-    "UserInfo",
+    "UsersInfo",
 ]

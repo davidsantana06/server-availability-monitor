@@ -1,11 +1,11 @@
 import socket
 
-from app.dtos import ServerConfig
+from app.dtos import ServersPool
 from app.enums import ServerStatus
 from app.services import log_service
 
 
-def check(server_config: ServerConfig, timeout_in_seconds: int) -> ServerStatus:
+def check(server_config: ServersPool, timeout_in_seconds: int) -> ServerStatus:
     try:
         with socket.create_connection(
             (server_config.host, server_config.port),

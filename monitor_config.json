@@ -16,8 +16,8 @@
     "check_workers": 10
   },
   "paths": {
-    "servers_config_file": "servers_config.json",
-    "user_info_file": "userInfo.json",
+    "servers_config_file": "servers_pool.json",
+    "user_info_file": "users_info.json",
     "logs_folder": "logs"
   }
 }
