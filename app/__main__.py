@@ -5,7 +5,7 @@ import argparse
 import sys
 import time
 
-from .dtos import MonitorConfig, ServerConfig
+from .dtos import MonitorConfig, ServersPool
 from .enums import ServerStatus
 from .repositories import (
     monitor_config_repository,
@@ -29,9 +29,9 @@ _CycleResult = NamedTuple(
 _StatusDiff = NamedTuple(
     "_StatusDiff",
     [
-        ("new_offline", List[ServerConfig]),
-        ("recovered", List[ServerConfig]),
-        ("still_offline", List[ServerConfig]),
+        ("new_offline", List[ServersPool]),
+        ("recovered", List[ServersPool]),
+        ("still_offline", List[ServersPool]),
     ]
 )
 
@@ -76,8 +76,8 @@ def _parse_args() -> Tuple[str, str]:
     parser.add_argument(
         "-c", "--config",
         dest="monitor_config_file",
-        default="monitorConfig.json",
-        help="Path to the monitor config file (default: monitorConfig.json)",
+        default="monitor_config.json",
+        help="Path to the monitor config file (default: monitor_config.json)",
     )
     args = parser.parse_args()
     return args.monitor_list_file, args.monitor_config_file
@@ -138,7 +138,10 @@ def _reload_configs(
 
     def reload_monitor_list() -> None:
         try:
-            monitor_list_repository.load(monitor_list_file)
+            hostnames = monitor_list_repository.load(monitor_list_file)
+            for hostname in hostnames:
+                if servers_config_repository.get_by_hostname(hostname) is None:
+                    log_service.emit_warning("unregistered hostname skipped: %s", hostname)
         except Exception as error:
             log_service.emit_error("failed to reload monitor_list: %s", error)
 
