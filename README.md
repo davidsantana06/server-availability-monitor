@@ -12,14 +12,14 @@ O SAM opera em loop contínuo. A cada ciclo, a sequência abaixo é executada:
 </div>
 
 1. **Argumentos da CLI parseados**
-2. **Inicialização** — `monitorConfig.json` lido e validado; logging inicializado
+2. **Inicialização** — `monitor_config.json` lido e validado; logging inicializado
 3. **Loop** — a cada `timing.check_interval_in_seconds`:
    - **Repositórios** — arquivos de configuração relidos do disco
    - **Serviço de conectividade** — servidores da lista verificados via TCP em paralelo (`concurrency.check_workers` threads)
    - **Diff de status** — resultado comparado ao ciclo anterior
    - **Serviço de notificação** — e-mail enviado via SMTP (com timeout) se houver queda, recuperação ou lembrete vencido
 
-O intervalo entre ciclos, o timeout de conexão, o intervalo mínimo entre notificações e o número de threads de verificação são configuráveis em `monitorConfig.json`. Os limites mínimo e máximo de cada um desses campos são validados pelos DTOs no bootstrap — valores fora da faixa interrompem a inicialização.
+O intervalo entre ciclos, o timeout de conexão, o intervalo mínimo entre notificações e o número de threads de verificação são configuráveis em `monitor_config.json`. Os limites mínimo e máximo de cada um desses campos são validados pelos DTOs no bootstrap — valores fora da faixa interrompem a inicialização.
 
 ## 🛠️ Instalação e Execução
 
@@ -43,9 +43,9 @@ O SAM depende de quatro arquivos para operar. Os caminhos de todos eles são con
 
 ---
 
-#### `monitorConfig.json`
+#### `monitor_config.json`
 
-Configuração central da aplicação. Referenciado via `-c/--config` (o padrão é: `monitorConfig.json`).
+Configuração central da aplicação. Referenciado via `-c/--config` (o padrão é: `monitor_config.json`).
 
 ```json
 {
@@ -66,8 +66,8 @@ Configuração central da aplicação. Referenciado via `-c/--config` (o padrão
     "check_workers": 10
   },
   "paths": {
-    "servers_config_file": "servers_config.json",
-    "user_info_file": "userInfo.json",
+    "servers_config_file": "servers_pool.json",
+    "user_info_file": "users_info.json",
     "logs_folder": "logs"
   }
 }
@@ -91,7 +91,7 @@ Configuração central da aplicação. Referenciado via `-c/--config` (o padrão
 
 ---
 
-#### `servers_config.json`
+#### `servers_pool.json`
 
 Lista de servidores que podem ser monitorados. Referenciado via `paths.servers_config_file`.
 
@@ -107,7 +107,7 @@ Cada entrada deve conter `hostname`, `port` e um dos dois campos de endereço: `
 
 ---
 
-#### `userInfo.json`
+#### `users_info.json`
 
 Lista de destinatários que receberão as notificações por e-mail. Referenciado via `paths.user_info_file`.
 
@@ -117,7 +117,7 @@ Lista de destinatários que receberão as notificações por e-mail. Referenciad
 
 #### `monitor_list.txt`
 
-Define quais hostnames de `servers_config.json` estão ativamente sob monitoramento. Referenciado via `-l/--list` (o padrão é: `monitor_list.txt`). Um hostname por linha.
+Define quais hostnames de `servers_pool.json` estão ativamente sob monitoramento. Referenciado via `-l/--list` (o padrão é: `monitor_list.txt`). Um hostname por linha.
 
 ```
 google-dns
@@ -125,7 +125,7 @@ cloudflare
 meu-servidor
 ```
 
-Servidores presentes em `servers_config.json` mas ausentes desta lista são ignorados pelo monitor.
+Servidores presentes em `servers_pool.json` mas ausentes desta lista são ignorados pelo monitor. Já hostnames listados aqui mas **não cadastrados** em `servers_pool.json` são ignorados e registrados como `WARNING` a cada ciclo — sem interromper a execução.
 
 ---
 
@@ -135,7 +135,7 @@ Servidores presentes em `servers_config.json` mas ausentes desta lista são igno
 python -m app
 ```
 
-Por padrão, o SAM busca `monitorConfig.json` e `monitor_list.txt` no diretório de trabalho atual. Os caminhos podem ser sobrescritos via argumentos:
+Por padrão, o SAM busca `monitor_config.json` e `monitor_list.txt` no diretório de trabalho atual. Os caminhos podem ser sobrescritos via argumentos:
 
 ```
 usage: app [-h] [-l MONITOR_LIST_FILE] [-c MONITOR_CONFIG_FILE]
@@ -145,13 +145,13 @@ optional arguments:
   -l, --list    MONITOR_LIST_FILE       Arquivo com a lista de hostnames monitorados
                                         (default: monitor_list.txt)
   -c, --config  MONITOR_CONFIG_FILE     Arquivo de configuração do monitor
-                                        (default: monitorConfig.json)
+                                        (default: monitor_config.json)
 ```
 
 Exemplo com caminhos explícitos:
 
 ```bash
-python -m app -l /etc/sam/monitor_list.txt -c /etc/sam/monitorConfig.json
+python -m app -l /etc/sam/monitor_list.txt -c /etc/sam/monitor_config.json
 ```
 
 Os logs são gravados em `paths.logs_folder` com rotação diária (um arquivo por data). Para encerrar a execução, pressione `CTRL+C`.
@@ -176,8 +176,8 @@ server-availability-monitor/
 │   │   ├── __init__.py
 │   │   ├── _base.py
 │   │   ├── monitor_config.py
-│   │   ├── server_config.py
-│   │   └── user_info.py
+│   │   ├── servers_pool.py
+│   │   └── users_info.py
 │   ├── repositories/
 │   │   ├── __init__.py
 │   │   ├── monitor_config_repository.py
@@ -195,10 +195,10 @@ server-availability-monitor/
 │   └── enums.py
 ├── assets/
 ├── logs/
-├── monitorConfig.json
+├── monitor_config.json
 ├── monitor_list.txt
-├── servers_config.json
-└── userInfo.json
+├── servers_pool.json
+└── users_info.json
 ```
 
 ### 📁 `app/`
@@ -211,7 +211,7 @@ Ponto de entrada. Faz o parse dos argumentos de CLI, inicializa o monitor e cond
 
 #### 📁 `dtos/`
 
-Objetos de transferência de dados que representam as estruturas lidas dos arquivos de configuração — `MonitorConfig`, `ServerConfig` e `UserInfo`. Cada DTO é imutável (`frozen=True`) e expõe um método `validate()` que verifica a integridade dos seus campos. O módulo `_base.py` define a classe base compartilhada por todos os DTOs.
+Objetos de transferência de dados que representam as estruturas lidas dos arquivos de configuração — `MonitorConfig`, `ServersPool` e `UsersInfo`. Cada DTO é imutável (`frozen=True`) e expõe um método `validate()` que verifica a integridade dos seus campos. O módulo `_base.py` define a classe base compartilhada por todos os DTOs.
 
 #### 📄 `enums.py`
 
@@ -223,10 +223,10 @@ Camada de acesso a dados. Cada repositório é responsável por ler e manter em 
 
 | Módulo                         | Responsabilidade                                     |
 | ------------------------------ | ---------------------------------------------------- |
-| `monitor_config_repository.py` | Lê e valida o `monitorConfig.json`                   |
+| `monitor_config_repository.py` | Lê e valida o `monitor_config.json`                  |
 | `monitor_list_repository.py`   | Lê a lista de hostnames ativos do `monitor_list.txt` |
-| `servers_config_repository.py` | Lê e indexa os servidores do `servers_config.json`   |
-| `user_info_repository.py`      | Lê os destinatários do `userInfo.json`               |
+| `servers_config_repository.py` | Lê e indexa os servidores do `servers_pool.json`     |
+| `user_info_repository.py`      | Lê os destinatários do `users_info.json`             |
 
 #### 📁 `services/`
 
