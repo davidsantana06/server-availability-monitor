@@ -2,3 +2,8 @@ __pycache__/
 .venv/
 .python-version
 logs/*.log
+
+monitor_config.json
+servers_pool.json
+users_info.json
+monitor_list.txt
