@@ -51,7 +51,7 @@ O SAM depende de quatro arquivos de configuração para operar. Os caminhos dos 
 
 #### `monitor_config.json`
 
-Configuração central da aplicação. Referenciado via `-c/--config` (o padrão é: `monitor_config.json`).
+Configuração central da aplicação. Referenciado via `-c/--config` (o padrão é: `monitor_config.json`). Crie o seu `monitor_config.json` a partir do template `monitor_config.example.json`, com:
 
 ```json
 {
@@ -99,7 +99,7 @@ Configuração central da aplicação. Referenciado via `-c/--config` (o padrão
 
 #### `servers_pool.json`
 
-Lista de servidores que podem ser monitorados. Referenciado via `paths.servers_pool_file`.
+Lista de servidores que podem ser monitorados. Referenciado via `paths.servers_pool_file`. Crie o seu `servers_pool.json` a partir do modelo versionado `servers_pool.example.json`, com:
 
 ```json
 [
@@ -115,7 +115,7 @@ Cada entrada deve conter `hostname`, `port` e um dos dois campos de endereço: `
 
 #### `users_info.json`
 
-Lista de destinatários que receberão as notificações por e-mail. Referenciado via `paths.users_info_file`.
+Lista de destinatários que receberão as notificações por e-mail. Referenciado via `paths.users_info_file`. Crie o seu `users_info.json` a partir do modelo versionado `users_info.example.json`, com:
 
 ```json
 [{ "username": "Nome Sobrenome", "email": "destinatario@email.com" }]
@@ -123,7 +123,7 @@ Lista de destinatários que receberão as notificações por e-mail. Referenciad
 
 #### `monitor_list.txt`
 
-Define quais hostnames de `servers_pool.json` estão ativamente sob monitoramento. Referenciado via `-l/--list` (o padrão é: `monitor_list.txt`). Um hostname por linha.
+Define quais hostnames de `servers_pool.json` estão ativamente sob monitoramento. Referenciado via `-l/--list` (o padrão é: `monitor_list.txt`). Um hostname por linha. Crie o seu `monitor_list.txt` a partir do modelo versionado `monitor_list.example.txt`, com:
 
 ```
 google-dns
