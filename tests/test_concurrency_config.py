@@ -14,24 +14,24 @@ def test_valid_concurrency_passes():
 
 
 def test_check_workers_above_max_fails():
-    # arrange
+    # a
     concurrency = ConcurrencyConfig(check_workers=128)
 
-    # act
+    # a
     is_valid, errors = concurrency.validate()
 
-    # assert
+    # a
     assert not is_valid
     assert "check_workers" in errors
 
 
 def test_check_workers_below_min_fails():
-    # arrange
+    # a
     concurrency = ConcurrencyConfig(check_workers=0)
 
-    # act
+    # a
     is_valid, errors = concurrency.validate()
 
-    # assert
+    # a
     assert not is_valid
     assert "check_workers" in errors

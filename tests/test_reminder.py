@@ -9,16 +9,16 @@ def test_reminder_due_without_previous_notification():
 
 
 def test_reminder_not_due_within_interval():
-    # arrange
+    # a
     just_notified = datetime.now()
 
-    # act / assert
+    # a / a
     assert _is_reminder_due(just_notified, 60) is False
 
 
 def test_reminder_due_after_interval():
-    # arrange
+    # a
     long_ago = datetime.now() - timedelta(seconds=120)
 
-    # act / assert
+    # a / a
     assert _is_reminder_due(long_ago, 60) is True

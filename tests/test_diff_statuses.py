@@ -26,30 +26,30 @@ def test_detects_new_offline():
 
 
 def test_detects_recovery():
-    # arrange
+    # a
     _seed("a")
     previous = {"a": ServerStatus.OFFLINE}
     current = {"a": ServerStatus.ONLINE}
 
-    # act
+    # a
     diff = monitor._diff_statuses(previous, current)
 
-    # assert
+    # a
     assert [s.hostname for s in diff.recovered] == ["a"]
     assert diff.new_offline == []
     assert diff.still_offline == []
 
 
 def test_still_offline_without_state_change():
-    # arrange
+    # a
     _seed("a")
     previous = {"a": ServerStatus.OFFLINE}
     current = {"a": ServerStatus.OFFLINE}
 
-    # act
+    # a
     diff = monitor._diff_statuses(previous, current)
 
-    # assert
+    # a
     assert [s.hostname for s in diff.still_offline] == ["a"]
     assert diff.new_offline == []
     assert diff.recovered == []
