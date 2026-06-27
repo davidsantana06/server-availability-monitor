@@ -23,7 +23,7 @@ O intervalo entre ciclos, o timeout de conexão, o intervalo mínimo entre notif
 
 ## 🛠️ Instalação e Execução
 
-Desenvolvido em **Python 3.9**, recomenda-se o uso dessa versão para garantir compatibilidade. O projeto não possui dependências externas — apenas a biblioteca padrão do Python é utilizada.
+Desenvolvido em **Python 3.9**, recomenda-se o uso dessa versão para garantir compatibilidade. Os passos abaixo devem ser executados a partir da raiz do projeto:
 
 ### 1️⃣ Criar e Ativar o Ambiente Virtual
 
@@ -37,9 +37,15 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 2️⃣ Preencher os Arquivos de Configuração
+### 2️⃣ Instalar as Dependências
 
-O SAM depende de quatro arquivos para operar. Os caminhos de todos eles são configuráveis; os valores abaixo servem como referência para o preenchimento.
+```bash
+pip install -r requirements.txt
+```
+
+### 3️⃣ Preencher os Arquivos de Configuração
+
+O SAM depende de quatro arquivos de configuração para operar. Os caminhos dos arquivos são configuráveis; os valores abaixo servem como referência para o preenchimento.
 
 ---
 
@@ -66,8 +72,8 @@ Configuração central da aplicação. Referenciado via `-c/--config` (o padrão
     "check_workers": 10
   },
   "paths": {
-    "servers_config_file": "servers_pool.json",
-    "user_info_file": "users_info.json",
+    "servers_pool_file": "servers_pool.json",
+    "users_info_file": "users_info.json",
     "logs_folder": "logs"
   }
 }
@@ -85,15 +91,15 @@ Configuração central da aplicação. Referenciado via `-c/--config` (o padrão
 | `timing.check_timeout_in_seconds`         | Timeout de cada conexão TCP                            |
 | `timing.notification_interval_in_seconds` | Intervalo mínimo entre lembretes de servidores offline |
 | `concurrency.check_workers`               | Nº de threads para verificação paralela dos servidores |
-| `paths.servers_config_file`               | Caminho para o arquivo de servidores monitorados       |
-| `paths.user_info_file`                    | Caminho para o arquivo de destinatários                |
+| `paths.servers_pool_file`                 | Caminho para o arquivo de servidores monitorados       |
+| `paths.users_info_file`                   | Caminho para o arquivo de destinatários                |
 | `paths.logs_folder`                       | Pasta onde os logs serão gravados                      |
 
 ---
 
 #### `servers_pool.json`
 
-Lista de servidores que podem ser monitorados. Referenciado via `paths.servers_config_file`.
+Lista de servidores que podem ser monitorados. Referenciado via `paths.servers_pool_file`.
 
 ```json
 [
@@ -109,7 +115,7 @@ Cada entrada deve conter `hostname`, `port` e um dos dois campos de endereço: `
 
 #### `users_info.json`
 
-Lista de destinatários que receberão as notificações por e-mail. Referenciado via `paths.user_info_file`.
+Lista de destinatários que receberão as notificações por e-mail. Referenciado via `paths.users_info_file`.
 
 ```json
 [{ "username": "Nome Sobrenome", "email": "destinatario@email.com" }]
@@ -125,11 +131,11 @@ cloudflare
 meu-servidor
 ```
 
-Servidores presentes em `servers_pool.json` mas ausentes desta lista são ignorados pelo monitor. Já hostnames listados aqui mas **não cadastrados** em `servers_pool.json` são ignorados e registrados como `WARNING` a cada ciclo — sem interromper a execução.
+Servidores presentes em `servers_pool.json`, mas ausentes desta lista, são ignorados pelo monitor. Já hostnames listados aqui, mas não cadastrados em `servers_pool.json`, são ignorados e registrados como `WARNING` a cada ciclo — sem interromper a execução.
 
 ---
 
-### 3️⃣ Iniciar o Monitor
+### 4️⃣ Iniciar o Monitor
 
 ```bash
 python -m app
@@ -143,9 +149,9 @@ usage: app [-h] [-l MONITOR_LIST_FILE] [-c MONITOR_CONFIG_FILE]
 optional arguments:
   -h, --help                            Exibe esta mensagem e encerra
   -l, --list    MONITOR_LIST_FILE       Arquivo com a lista de hostnames monitorados
-                                        (default: monitor_list.txt)
+                                        (padrão: monitor_list.txt)
   -c, --config  MONITOR_CONFIG_FILE     Arquivo de configuração do monitor
-                                        (default: monitor_config.json)
+                                        (padrão: monitor_config.json)
 ```
 
 Exemplo com caminhos explícitos:
@@ -160,10 +166,9 @@ Os logs são gravados em `paths.logs_folder` com rotação diária (um arquivo p
 
 A suíte cobre apenas a **lógica pura** da aplicação — validação dos DTOs (`TimingConfig`, `ConcurrencyConfig`), o diff de status entre ciclos (`_diff_statuses`) e a regra de lembrete (`_is_reminder_due`), seguindo o padrão _arrange / act / assert_.
 
-O `pytest` é a única dependência de desenvolvimento (declarada em `requirements.txt`). Para executar:
+O `pytest` é a dependência de desenvolvimento do projeto. Com as dependências já instaladas, execute a suíte com:
 
 ```bash
-pip install -r requirements.txt
 pytest --verbose
 ```
 
