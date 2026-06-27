@@ -84,19 +84,19 @@ class ConcurrencyConfig(Base):
 
 @dataclass(frozen=True)
 class PathsConfig(Base):
-    servers_config_file: str
-    user_info_file: str
+    servers_pool_file: str
+    users_info_file: str
     logs_folder: str
 
     def validate(self) -> Base.DTOValidation:
         return self._aggregate([
             (
-                self._is_not_blank(self.servers_config_file),
-                f"invalid paths.servers_config_file: {self.servers_config_file!r}",
+                self._is_not_blank(self.servers_pool_file),
+                f"invalid paths.servers_pool_file: {self.servers_pool_file!r}",
             ),
             (
-                self._is_not_blank(self.user_info_file),
-                f"invalid paths.user_info_file: {self.user_info_file!r}",
+                self._is_not_blank(self.users_info_file),
+                f"invalid paths.users_info_file: {self.users_info_file!r}",
             ),
             (
                 self._is_not_blank(self.logs_folder),

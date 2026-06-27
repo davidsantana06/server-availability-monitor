@@ -35,8 +35,8 @@ _RawConcurrencyConfig = TypedDict(
 _RawPathsConfig = TypedDict(
     "_RawPathsConfig",
     {
-        "servers_config_file": str,
-        "user_info_file": str,
+        "servers_pool_file": str,
+        "users_info_file": str,
         "logs_folder": str,
     }
 )

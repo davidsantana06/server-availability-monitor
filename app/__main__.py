@@ -116,7 +116,7 @@ def _reload_configs(
 
     def reload_user_infos() -> None:
         try:
-            user_infos = user_info_repository.load(last_valid_monitor_config.paths.user_info_file)
+            user_infos = user_info_repository.load(last_valid_monitor_config.paths.users_info_file)
             for user_info in user_infos:
                 is_valid, errors = user_info.validate()
                 if not is_valid:
@@ -127,7 +127,7 @@ def _reload_configs(
     def reload_server_configs() -> None:
         try:
             server_configs = servers_config_repository.load(
-                last_valid_monitor_config.paths.servers_config_file
+                last_valid_monitor_config.paths.servers_pool_file,
             )
             for server_config in server_configs:
                 is_valid, errors = server_config.validate()
